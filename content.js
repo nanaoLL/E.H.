@@ -9,7 +9,7 @@ let enableFullBang = true;
 let goal10 = true;
 let goal30 = true;
 let goalNumber = true;
-let enableAutoCopy = true; // 🔥 자동 복사 여부 변수 추가
+let enableAutoCopy = true; 
 
 chrome.storage.local.get([
   'selectedServer', 'goal10', 'goal30', 'goalNumber', 'enableNewTicket', 'enableFullBang', 'enableAutoCopy'
@@ -30,7 +30,7 @@ chrome.storage.onChanged.addListener((changes) => {
   if (changes.goalNumber !== undefined) goalNumber = changes.goalNumber.newValue;
   if (changes.enableNewTicket !== undefined) enableNewTicket = changes.enableNewTicket.newValue;
   if (changes.enableFullBang !== undefined) enableFullBang = changes.enableFullBang.newValue;
-  if (changes.enableAutoCopy !== undefined) enableAutoCopy = changes.enableAutoCopy.newValue; // 🔥 설정 반영
+  if (changes.enableAutoCopy !== undefined) enableAutoCopy = changes.enableAutoCopy.newValue;
 });
 
 // ====== 2. 메인 페이지 (협동작전 목록) 새 티켓 감지 ======
@@ -70,6 +70,14 @@ function checkForNewTickets() {
         if (goals.includes(text)) ticketGoal = text; 
       });
 
+      // 🔥 [추가됨] 파티 조합 추출 로직
+      let partyCombo = "";
+      const usersIcon = ticket.querySelector('.lucide-users');
+      if (usersIcon && usersIcon.parentElement) {
+        // 아이콘 옆에 있는 텍스트만 깔끔하게 가져옵니다.
+        partyCombo = usersIcon.parentElement.innerText.trim();
+      }
+
       if (ticketGoal === "in 10%" && !goal10) return;
       if (ticketGoal === "in 30%" && !goal30) return;
       if (ticketGoal === "숫자단" && !goalNumber) return;
@@ -89,11 +97,12 @@ function checkForNewTickets() {
       if (targetServer !== "전체" && !fullText.includes(targetServer)) return;
 
       if (isReady) {
-        console.log(`[알리미] 🔔 새 티켓 감지됨!: ${finalTitle}`);
+        console.log(`[알리미] 🔔 새 티켓 감지됨!: ${finalTitle} (조합: ${partyCombo})`);
         chrome.runtime.sendMessage({
           type: "NEW_TICKET",
           ticketId: ticketId,
-          title: finalTitle
+          title: finalTitle,
+          partyCombo: partyCombo // 🔥 백그라운드로 파티 조합 전송
         });
       }
     }
@@ -130,13 +139,11 @@ let debounceTimer = null;
 const observer = new MutationObserver((mutations) => {
   const currentUrl = location.href;
   
-  // URL(페이지) 변경 감지
   if (currentUrl !== lastUrl) {
     lastUrl = currentUrl;
     console.log(`[알리미] 🔄 페이지 이동 감지 (${currentUrl}). 알림 일시 정지...`);
     reInitializeScanner();
 
-    // 🔥 옵션이 켜져 있을 때만 자동 복사 실행
     if (enableAutoCopy && currentUrl.includes('/ticket/')) {
       autoCopyTicketCode();
     }
@@ -206,7 +213,6 @@ function reInitializeScanner() {
   }, 1000);
 }
 
-// 독립적인 복사 전담 함수
 function autoCopyTicketCode() {
   let attempts = 0;
   const copyInterval = setInterval(() => {
@@ -238,7 +244,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       ticketToClick.style.backgroundColor = "#ffeb3b";
       setTimeout(() => { ticketToClick.style.backgroundColor = originalBg || ''; }, 1500);
 
-      // 티켓을 클릭하면 URL이 바뀌므로 4번 옵션 설정(enableAutoCopy)에 따라 복사 실행됨
       ticketToClick.click();
     }
   }

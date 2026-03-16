@@ -1,10 +1,13 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // 1. 새 티켓 알림
   if (request.type === "NEW_TICKET") {
+    // 🔥 전달받은 파티 조합 문구를 제목으로 설정 (조합이 비어있으면 기본값 사용)
+    const notiTitle = request.partyCombo ? `파티 모집! : ${request.partyCombo}` : "파티 모집!";
+
     chrome.notifications.create(request.ticketId, {
       type: "basic",
-      iconUrl: "icons/icon.png", // 🔥 경로 수정
-      title: "새로운 티켓 발견!",
+      iconUrl: "icons/icon.png",
+      title: notiTitle, // 🔥 동적 제목 적용
       message: request.title,
       priority: 2
     }, (notificationId) => {
@@ -25,7 +28,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     chrome.notifications.create(notiId, {
       type: "basic",
-      iconUrl: "icons/icon.png", // 🔥 경로 수정
+      iconUrl: "icons/icon.png",
       title: "풀방!!",
       message: fullBangMessage,
       priority: 2
