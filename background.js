@@ -3,7 +3,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === "NEW_TICKET") {
     chrome.notifications.create(request.ticketId, {
       type: "basic",
-      iconUrl: "icon.png",
+      iconUrl: "icons/icon.png", // 🔥 경로 수정
       title: "새로운 티켓 발견!",
       message: request.title,
       priority: 2
@@ -25,7 +25,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     chrome.notifications.create(notiId, {
       type: "basic",
-      iconUrl: "icon.png",
+      iconUrl: "icons/icon.png", // 🔥 경로 수정
       title: "풀방!!",
       message: fullBangMessage,
       priority: 2
