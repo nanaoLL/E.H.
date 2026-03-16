@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { 
+      font-family: 'Malgun Gothic', sans-serif; 
+      width: 240px; 
+      padding: 15px; 
+      margin: 0; 
+      background-color: #f8f9fa;
+    }
+    h4 { 
+      margin-top: 0; 
+      margin-bottom: 12px; 
+      color: #333; 
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px; 
+    }
+    .title-icon {
+      width: 18px;
+      height: 18px;
+    }
+    .control-group { 
+      margin-bottom: 15px; 
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    label { 
+      display: flex; 
+      align-items: center;
+      margin-bottom: 8px; 
+      font-size: 13px; 
+      color: #444;
+      cursor: pointer;
+    }
+    select, button { 
+      width: 100%; 
+      padding: 8px; 
+      box-sizing: border-box; 
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    select:focus {
+      outline: none;
+      border-color: #2196F3;
+    }
+    input[type="checkbox"] {
+      margin-right: 8px;
+      cursor: pointer;
+    }
+    
+    button { 
+      color: white; 
+      border: none; 
+      border-radius: 6px; 
+      cursor: pointer; 
+      font-weight: bold; 
+      padding: 10px;
+      transition: background-color 0.2s, transform 0.1s;
+      margin-bottom: 8px;
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+
+    #saveBtn {
+      background-color: #2196F3; 
+    }
+    #saveBtn:hover {
+      background-color: #1976D2;
+    }
+
+    #goSiteBtn {
+      background-color: #FF9800;
+      margin-bottom: 0; 
+    }
+    #goSiteBtn:hover {
+      background-color: #F57C00;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="control-group">
+    <h4>
+      <img src="server_icon.png" class="title-icon" alt="서버"> 
+      알림 받을 서버
+    </h4>
+    <select id="serverSelect">
+      <option value="전체">전체 서버</option>
+      <option value="한섭">한섭</option>
+      <option value="일섭">일섭</option>
+      <option value="글로벌">글로벌</option>
+      <option value="북미">북미</option>
+    </select>
+  </div>
+
+  <div class="control-group">
+    <h4>
+      <img src="target_icon.png" class="title-icon" alt="목표"> 
+      주차 목표
+    </h4>
+    <label>
+      <input type="checkbox" id="goal10" checked> in 10%
+    </label>
+    <label>
+      <input type="checkbox" id="goal30" checked> in 30%
+    </label>
+    <label>
+      <input type="checkbox" id="goalNumber" checked> 숫자단
+    </label>
+  </div>
+
+  <div class="control-group">
+    <h4>
+      <img src="bell_icon.png" class="title-icon" alt="알림"> 
+      기타 설정(On/Off)
+    </h4>
+    <label>
+      <input type="checkbox" id="newTicketAlert" checked> 새 티켓 알림
+    </label>
+    <label>
+      <input type="checkbox" id="fullBangAlert" checked> 풀방(5/5) 알림
+    </label>
+    <label>
+      <input type="checkbox" id="autoCopyEnabled" checked> 입장 시 코드 복사
+    </label>
+  </div>
+
+  <button id="saveBtn">설정 저장</button>
+  <button id="goSiteBtn">레츠도로 바로가기</button>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
