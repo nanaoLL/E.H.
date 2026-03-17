@@ -51,4 +51,4 @@
 >     * edge://settings/system
 >     * 해당 메뉴에서 *성능 > 다음 사이트를 항상 활성 상태로 유지 > 추가* 를 선택한 후 **https://letsdoro.com/** 를 등록합니다.
 >     * <img width="974" height="145" alt="image" src="https://github.com/user-attachments/assets/b0a7a6c8-374f-43f9-ad88-55bac67779e4" />
-
+>* 기능을 사용하지 않을 때는 레츠도로 탭을 닫아두면 됩니다.
