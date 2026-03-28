@@ -9,15 +9,17 @@ let enableFullBang = true;
 let goal10 = true;
 let goal30 = true;
 let goalNumber = true;
+let goalLove = true; // 애정망호 변수 추가
 let enableAutoCopy = true; 
 
 chrome.storage.local.get([
-  'selectedServer', 'goal10', 'goal30', 'goalNumber', 'enableNewTicket', 'enableFullBang', 'enableAutoCopy'
+  'selectedServer', 'goal10', 'goal30', 'goalNumber', 'goalLove', 'enableNewTicket', 'enableFullBang', 'enableAutoCopy'
 ], (result) => {
   if (result.selectedServer) targetServer = result.selectedServer;
   if (result.goal10 !== undefined) goal10 = result.goal10;
   if (result.goal30 !== undefined) goal30 = result.goal30;
   if (result.goalNumber !== undefined) goalNumber = result.goalNumber;
+  if (result.goalLove !== undefined) goalLove = result.goalLove; // 애정망호 반영
   if (result.enableNewTicket !== undefined) enableNewTicket = result.enableNewTicket;
   if (result.enableFullBang !== undefined) enableFullBang = result.enableFullBang;
   if (result.enableAutoCopy !== undefined) enableAutoCopy = result.enableAutoCopy;
@@ -28,6 +30,7 @@ chrome.storage.onChanged.addListener((changes) => {
   if (changes.goal10 !== undefined) goal10 = changes.goal10.newValue;
   if (changes.goal30 !== undefined) goal30 = changes.goal30.newValue;
   if (changes.goalNumber !== undefined) goalNumber = changes.goalNumber.newValue;
+  if (changes.goalLove !== undefined) goalLove = changes.goalLove.newValue; // 애정망호 반영
   if (changes.enableNewTicket !== undefined) enableNewTicket = changes.enableNewTicket.newValue;
   if (changes.enableFullBang !== undefined) enableFullBang = changes.enableFullBang.newValue;
   if (changes.enableAutoCopy !== undefined) enableAutoCopy = changes.enableAutoCopy.newValue;
@@ -60,7 +63,7 @@ function checkForNewTickets() {
       
       const servers = ["한섭", "일섭", "글로벌", "북미"];
       const guilds = ["야생", "갤길", "라운지"];
-      const goals = ["in 10%", "in 30%", "숫자단"]; 
+      const goals = ["in 10%", "in 30%", "숫자단", "애정망호"]; // 애정망호 인식 배열에 추가
 
       const allTextNodes = ticket.querySelectorAll('span, div');
       allTextNodes.forEach(node => {
@@ -70,7 +73,7 @@ function checkForNewTickets() {
         if (goals.includes(text)) ticketGoal = text; 
       });
 
-      // 🔥 [추가됨] 파티 조합 추출 로직
+      // 파티 조합 추출 로직
       let partyCombo = "";
       const usersIcon = ticket.querySelector('.lucide-users');
       if (usersIcon && usersIcon.parentElement) {
@@ -78,9 +81,11 @@ function checkForNewTickets() {
         partyCombo = usersIcon.parentElement.innerText.trim();
       }
 
+      // 필터링 조건문에 애정망호 추가
       if (ticketGoal === "in 10%" && !goal10) return;
       if (ticketGoal === "in 30%" && !goal30) return;
       if (ticketGoal === "숫자단" && !goalNumber) return;
+      if (ticketGoal === "애정망호" && !goalLove) return; 
 
       let prefix = "";
       if (serverTag && guildTag) {
@@ -102,7 +107,7 @@ function checkForNewTickets() {
           type: "NEW_TICKET",
           ticketId: ticketId,
           title: finalTitle,
-          partyCombo: partyCombo // 🔥 백그라운드로 파티 조합 전송
+          partyCombo: partyCombo // 백그라운드로 파티 조합 전송
         });
       }
     }
