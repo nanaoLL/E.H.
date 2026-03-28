@@ -43,5 +43,12 @@
 >* <img width="858" height="133" alt="image" src="https://github.com/user-attachments/assets/47ff9db1-b4ca-43a8-84c9-c0483a608c71" />
 >
 >A2) 레츠도로 사이트의 홈 화면이 브라우저에 켜져있는지 확인
->* 꼭 해당 페이지가 있는 탭을 활성화해두지 않아도 상관 없으나, 비활성 상태면 동작하지 않을 수 있으므로 탭 우클릭 > 탭 고정을 해 두는 것을 추천
->* <img width="501" height="298" alt="image" src="https://github.com/user-attachments/assets/95446ba3-6869-4f92-aed3-1dca885d9113" />
+>* Chromium 계열 브라우저는 기본적으로 1시간동안 사용하지 않은 탭을 자동으로 절전 모드로 전환합니다.
+>* 만약, 대기 시간이 1시간 이상이 될 것 같음에도 알람을 계속 받아보고 싶다면 아래 경로에서 레츠도로 사이트를 항상 활성화하도록 추가하세요.
+>     * 각 인터넷 우상단 ··· 메뉴 > 설정 > 시스템/성능 관련 탭을 선택하거나 하단 url을 주소창에 직접 입력
+>     * chrome://settings/system
+>     * whale://settings/system
+>     * edge://settings/system
+>     * 해당 메뉴에서 *성능 > 다음 사이트를 항상 활성 상태로 유지 > 추가* 를 선택한 후 **https://letsdoro.com/** 를 등록합니다.
+>     * <img width="974" height="145" alt="image" src="https://github.com/user-attachments/assets/b0a7a6c8-374f-43f9-ad88-55bac67779e4" />
+>* 기능을 사용하지 않을 때는 레츠도로 탭을 닫아두면 됩니다.
