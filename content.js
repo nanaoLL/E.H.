@@ -9,7 +9,7 @@ let enableFullBang = true;
 let goal10 = true;
 let goal30 = true;
 let goalNumber = true;
-let goalLove = true; // 애정망호 변수 추가
+let goalLove = true; // 애정망호 변수
 let enableAutoCopy = true; 
 
 chrome.storage.local.get([
@@ -19,7 +19,7 @@ chrome.storage.local.get([
   if (result.goal10 !== undefined) goal10 = result.goal10;
   if (result.goal30 !== undefined) goal30 = result.goal30;
   if (result.goalNumber !== undefined) goalNumber = result.goalNumber;
-  if (result.goalLove !== undefined) goalLove = result.goalLove; // 애정망호 반영
+  if (result.goalLove !== undefined) goalLove = result.goalLove; 
   if (result.enableNewTicket !== undefined) enableNewTicket = result.enableNewTicket;
   if (result.enableFullBang !== undefined) enableFullBang = result.enableFullBang;
   if (result.enableAutoCopy !== undefined) enableAutoCopy = result.enableAutoCopy;
@@ -30,7 +30,7 @@ chrome.storage.onChanged.addListener((changes) => {
   if (changes.goal10 !== undefined) goal10 = changes.goal10.newValue;
   if (changes.goal30 !== undefined) goal30 = changes.goal30.newValue;
   if (changes.goalNumber !== undefined) goalNumber = changes.goalNumber.newValue;
-  if (changes.goalLove !== undefined) goalLove = changes.goalLove.newValue; // 애정망호 반영
+  if (changes.goalLove !== undefined) goalLove = changes.goalLove.newValue; 
   if (changes.enableNewTicket !== undefined) enableNewTicket = changes.enableNewTicket.newValue;
   if (changes.enableFullBang !== undefined) enableFullBang = changes.enableFullBang.newValue;
   if (changes.enableAutoCopy !== undefined) enableAutoCopy = changes.enableAutoCopy.newValue;
@@ -44,18 +44,31 @@ function checkForNewTickets() {
   const tickets = document.querySelectorAll(TICKET_SELECTOR);
   
   tickets.forEach(ticket => {
-    let ticketId = ticket.getAttribute('data-ext-ticket-id');
-    if (!ticketId) {
-      ticketId = 'ticket_' + Math.random().toString(36).substr(2, 9);
-      ticket.setAttribute('data-ext-ticket-id', ticketId);
+    // 🔥 1단계: 티켓의 진짜 내용물(방장 + 제목)을 추출하여 고유 지문 생성
+    const titleElement = ticket.querySelector('h3');
+    let baseTitle = titleElement ? titleElement.innerText.trim() : "새로운 티켓";
+
+    const hostElement = ticket.querySelector('.ticket-bottom .truncate.font-semibold');
+    const hostName = hostElement ? hostElement.innerText.trim() : "알수없음";
+
+    const realTicketData = `${hostName}_${baseTitle}`;
+
+    // 🔥 2단계: DOM 재활용 방지 로직 (상자가 재활용되어 내용이 바뀌었는지 체크)
+    let domTicketId = ticket.getAttribute('data-ext-ticket-id');
+    let lastTicketData = ticket.getAttribute('data-ext-ticket-data');
+
+    if (!domTicketId || lastTicketData !== realTicketData) {
+      // 새로운 상자거나, 재활용되어서 안에 내용물(글씨)이 바뀐 상자라면 ID 리셋!
+      domTicketId = 'ticket_' + Math.random().toString(36).substr(2, 9);
+      ticket.setAttribute('data-ext-ticket-id', domTicketId);
+      ticket.setAttribute('data-ext-ticket-data', realTicketData); // 현재 내용물 저장
     }
 
-    if (!seenTickets.has(ticketId)) {
-      seenTickets.add(ticketId); 
+    // 🔥 3단계: 알림 중복 검사는 무작위 ID가 아닌 '진짜 내용물(realTicketData)' 기준으로 판단
+    if (!seenTickets.has(realTicketData)) {
+      seenTickets.add(realTicketData); 
       
       const fullText = ticket.innerText.replace(/\n/g, ' ').trim();
-      const titleElement = ticket.querySelector('h3');
-      let baseTitle = titleElement ? titleElement.innerText.trim() : "새로운 티켓이 등록되었습니다.";
 
       let serverTag = "";
       let guildTag = "";
@@ -63,7 +76,7 @@ function checkForNewTickets() {
       
       const servers = ["한섭", "일섭", "글로벌", "북미"];
       const guilds = ["야생", "갤길", "라운지"];
-      const goals = ["in 10%", "in 30%", "숫자단", "애정망호"]; // 애정망호 인식 배열에 추가
+      const goals = ["in 10%", "in 30%", "숫자단", "애정망호"]; 
 
       const allTextNodes = ticket.querySelectorAll('span, div');
       allTextNodes.forEach(node => {
@@ -73,15 +86,13 @@ function checkForNewTickets() {
         if (goals.includes(text)) ticketGoal = text; 
       });
 
-      // 파티 조합 추출 로직
       let partyCombo = "";
       const usersIcon = ticket.querySelector('.lucide-users');
       if (usersIcon && usersIcon.parentElement) {
-        // 아이콘 옆에 있는 텍스트만 깔끔하게 가져옵니다.
         partyCombo = usersIcon.parentElement.innerText.trim();
       }
 
-      // 필터링 조건문에 애정망호 추가
+      // 목표 필터링
       if (ticketGoal === "in 10%" && !goal10) return;
       if (ticketGoal === "in 30%" && !goal30) return;
       if (ticketGoal === "숫자단" && !goalNumber) return;
@@ -105,9 +116,9 @@ function checkForNewTickets() {
         console.log(`[알리미] 🔔 새 티켓 감지됨!: ${finalTitle} (조합: ${partyCombo})`);
         chrome.runtime.sendMessage({
           type: "NEW_TICKET",
-          ticketId: ticketId,
+          ticketId: domTicketId, // 클릭 시 화면 이동을 위해 클릭용 ID 전달
           title: finalTitle,
-          partyCombo: partyCombo // 백그라운드로 파티 조합 전송
+          partyCombo: partyCombo 
         });
       }
     }
@@ -121,9 +132,11 @@ function checkForFullBang() {
   if (!window.location.href.includes('/ticket/')) return;
   if (!enableFullBang) return;
 
-  const participantBlocks = document.querySelectorAll('.flex-1.overflow-y-auto .bg-\\[var\\(--color-surface\\)\\].rounded-lg');
-  
-  if (participantBlocks.length >= 5 && !isFullBangNotified) {
+  // 컨테이너를 찾지 않고, 명함 박스 자체를 찾아서 개수 체크
+  const participantBoxes = document.querySelectorAll('.flex-1.overflow-y-auto .bg-\\[var\\(--color-surface\\)\\].rounded-lg');
+  const participantCount = participantBoxes.length;
+
+  if (participantCount >= 5 && !isFullBangNotified) {
     isFullBangNotified = true;
     
     if (isReady) {
@@ -132,7 +145,7 @@ function checkForFullBang() {
         type: "FULL_BANG_ALERT"
       });
     }
-  } else if (participantBlocks.length < 5) {
+  } else if (participantCount < 5) {
     isFullBangNotified = false;
   }
 }
@@ -147,6 +160,10 @@ const observer = new MutationObserver((mutations) => {
   if (currentUrl !== lastUrl) {
     lastUrl = currentUrl;
     console.log(`[알리미] 🔄 페이지 이동 감지 (${currentUrl}). 알림 일시 정지...`);
+    
+    // 🔥 로비나 다른 방으로 이동할 때 무조건 풀방 알림 상태 초기화
+    isFullBangNotified = false; 
+    
     reInitializeScanner();
 
     if (enableAutoCopy && currentUrl.includes('/ticket/')) {
@@ -170,6 +187,10 @@ const observer = new MutationObserver((mutations) => {
         }
       }
     }
+    // Svelte 노드 텍스트 변경 감지 (재활용 대응)
+    if (mutation.type === 'characterData') {
+       hasNewTicketNode = true;
+    }
     if (hasNewTicketNode) break;
   }
 
@@ -187,7 +208,8 @@ const observer = new MutationObserver((mutations) => {
 
 observer.observe(document.body, { 
     childList: true, 
-    subtree: true 
+    subtree: true,
+    characterData: true // 🔥 텍스트 내용 변경도 감지하도록 추가
 });
 
 // ====== 5. 초기화 및 자동 복사 공통 함수 ======
@@ -195,19 +217,30 @@ function reInitializeScanner() {
   isReady = false; 
   
   setTimeout(() => {
+    // 🔥 초기화할 때도 진짜 내용물(방장+제목)로 저장하도록 변경
     const initialTickets = document.querySelectorAll(TICKET_SELECTOR);
     initialTickets.forEach(ticket => {
-      let ticketId = ticket.getAttribute('data-ext-ticket-id');
-      if (!ticketId) {
-        ticketId = 'ticket_' + Math.random().toString(36).substr(2, 9);
-        ticket.setAttribute('data-ext-ticket-id', ticketId);
+      const titleElement = ticket.querySelector('h3');
+      const baseTitle = titleElement ? titleElement.innerText.trim() : "새로운 티켓";
+      const hostElement = ticket.querySelector('.ticket-bottom .truncate.font-semibold');
+      const hostName = hostElement ? hostElement.innerText.trim() : "알수없음";
+      
+      const realTicketData = `${hostName}_${baseTitle}`;
+      
+      let domTicketId = ticket.getAttribute('data-ext-ticket-id');
+      if (!domTicketId) {
+        domTicketId = 'ticket_' + Math.random().toString(36).substr(2, 9);
+        ticket.setAttribute('data-ext-ticket-id', domTicketId);
+        ticket.setAttribute('data-ext-ticket-data', realTicketData);
       }
-      seenTickets.add(ticketId); 
+      seenTickets.add(realTicketData); 
     });
 
     if (window.location.href.includes('/ticket/')) {
-        const participantBlocks = document.querySelectorAll('.flex-1.overflow-y-auto .bg-\\[var\\(--color-surface\\)\\].rounded-lg');
-        if(participantBlocks.length >= 5) isFullBangNotified = true;
+        const listContainer = document.querySelector('.flex-1.overflow-y-auto.space-y-2');
+        if (listContainer && listContainer.children.length >= 5) {
+          isFullBangNotified = true;
+        }
     }
     
     setTimeout(() => {
