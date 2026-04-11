@@ -254,22 +254,21 @@ function reInitializeScanner() {
 // ====== 입장 코드 자동 복사 로직 ======
 function autoCopyTicketCode() {
   let attempts = 0;
-  const maxAttempts = 60; // 최대 대기 시간
+  const maxAttempts = 60; // 최대 대기 시간 30초 (0.5초 간격 시도)
 
   const copyInterval = setInterval(() => {
     attempts++;
     const copyBtn = document.querySelector('button[title="클릭하여 복사"]');
 
     if (copyBtn) {
-      // 크롬 보안 정책 때문에 화면이 가려져 있으면 복사가 차단되므로 현재 창이 화면에 보일 때만 클릭을 시도
-      if (!document.hidden) {
+      // 해당 화면이 포커스되었을 때 버튼을 눌러서 카피
+      if (document.hasFocus()) {
         copyBtn.click();
         console.log("✅ 입장 코드 자동 복사 완료");
         clearInterval(copyInterval);
       } 
-      // 다른 행위 중이었다면 대기하다가 복사를 실행
+      // 만약 창이 포커스를 잃은 상태라면 대기
     } else if (attempts >= maxAttempts) { 
-      // 30초가 지나도 전환이 되지 않은 경우 대기 취소
       console.log("❌ 입장 코드 자동 복사 실패 (시간 초과)");
       clearInterval(copyInterval);
     }
