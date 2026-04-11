@@ -251,17 +251,26 @@ function reInitializeScanner() {
   }, 1000);
 }
 
+// ====== 입장 코드 자동 복사 로직 ======
 function autoCopyTicketCode() {
   let attempts = 0;
+  const maxAttempts = 60; // 최대 대기 시간
+
   const copyInterval = setInterval(() => {
     attempts++;
     const copyBtn = document.querySelector('button[title="클릭하여 복사"]');
 
     if (copyBtn) {
-      copyBtn.click();
-      console.log("✅ 입장 코드 자동 복사 완료!");
-      clearInterval(copyInterval);
-    } else if (attempts >= 20) { 
+      // 크롬 보안 정책 때문에 화면이 가려져 있으면 복사가 차단되므로 현재 창이 화면에 보일 때만 클릭을 시도
+      if (!document.hidden) {
+        copyBtn.click();
+        console.log("✅ 입장 코드 자동 복사 완료");
+        clearInterval(copyInterval);
+      } 
+      // 다른 행위 중이었다면 대기하다가 복사를 실행
+    } else if (attempts >= maxAttempts) { 
+      // 30초가 지나도 전환이 되지 않은 경우 대기 취소
+      console.log("❌ 입장 코드 자동 복사 실패 (시간 초과)");
       clearInterval(copyInterval);
     }
   }, 500);
