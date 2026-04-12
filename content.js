@@ -1,12 +1,12 @@
 // ====== 1. 설정 및 공통 변수 ======
 let isReady = false; 
 
-// 핵심 기능 ON/OFF 상태만 관리합니다.
-let enableNewTicket = false; // 사이트 순정 알림을 쓰신다면 기본적으로 꺼두셔도 됩니다.
+// 기능 ON/OFF
+let enableNewTicket = false;
 let enableFullBang = true;
 let enableAutoCopy = true; 
 
-// 저장된 설정 불러오기 (필요한 옵션만 유지)
+// 저장된 설정 불러오기
 chrome.storage.local.get([
   'enableNewTicket', 'enableFullBang', 'enableAutoCopy'
 ], (result) => {
@@ -29,7 +29,7 @@ function checkForFullBang() {
   if (!window.location.href.includes('/ticket/')) return;
   if (!enableFullBang) return;
 
-  // 명함 박스 자체를 찾아서 개수 체크 (가장 견고한 방식)
+  // 명함 박스를 찾아서 개수 체크
   const participantBoxes = document.querySelectorAll('.flex-1.overflow-y-auto .bg-\\[var\\(--color-surface\\)\\].rounded-lg');
   const participantCount = participantBoxes.length;
 
@@ -37,7 +37,7 @@ function checkForFullBang() {
     isFullBangNotified = true;
     
     if (isReady) {
-      console.log("[알리미] 🎉 5명 풀방 감지!");
+      console.log("[알리미] 5명 풀방 감지");
       chrome.runtime.sendMessage({ type: "FULL_BANG_ALERT" });
     }
   } else if (participantCount < 5) {
@@ -77,7 +77,7 @@ observer.observe(document.body, {
     characterData: true 
 });
 
-// ====== 4. 입장 코드 자동 복사 로직 (포커스 감지 포함) ======
+// ====== 4. 입장 코드 자동 복사 로직 ======
 function autoCopyTicketCode() {
   let attempts = 0;
   const maxAttempts = 60; // 30초 대기
@@ -87,7 +87,7 @@ function autoCopyTicketCode() {
     const copyBtn = document.querySelector('button[title="클릭하여 복사"]');
 
     if (copyBtn) {
-      // 사이트 순정 알림을 클릭해서 창이 떴을 때, 
+      // 알림을 클릭해서 창이 떴을 때, 
       // 사용자가 해당 탭을 진짜로 보고 있을 때(포커스 되었을 때)만 복사 실행
       if (document.hasFocus()) {
         copyBtn.click();
@@ -103,7 +103,7 @@ function autoCopyTicketCode() {
 
 // 초기화
 window.onload = () => {
-  console.log("🚀 레츠도로 알리미 (경량화 버전) 로딩 완료");
+  console.log("레츠도로 알리미 로딩 완료");
   setTimeout(() => {
     isReady = true;
     // 시작하자마자 티켓 방이라면 자동 복사 시도

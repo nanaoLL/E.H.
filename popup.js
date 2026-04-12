@@ -34,8 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.tabs.create({ url: 'https://github.com/nanaoLL/E.H.' }); 
   });
 
-  // --- 3. 스마트 버전 비교 로직 ---
-  // (예: "1.2" vs "1.1.1" 비교 함수)
+  // --- 3. 버전 비교 ---
   function compareVersions(v1, v2) {
     const parts1 = v1.replace(/[^0-9.]/g, '').split('.').map(Number);
     const parts2 = v2.replace(/[^0-9.]/g, '').split('.').map(Number);
@@ -50,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return 0; // 동일한 버전
   }
 
-  // 메시지를 띄우고 5초 뒤에 숨기는 함수
+  // 메시지를 띄우고 5초 뒤에 Hide
   let timeoutId;
   function showMessage(htmlText, isError = false) {
     updateMessage.innerHTML = htmlText;
