@@ -1,181 +1,189 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
+  <title>레츠도로 알리미 설정</title>
   <style>
-    body { 
-      font-family: 'Malgun Gothic', sans-serif; 
-      width: 260px; 
-      padding: 15px; 
-      margin: 0; 
-      background-color: #f8f9fa;
+    body {
+      font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+      width: 300px;
+      padding: 15px;
+      background-color: #f8fafc;
+      color: #333;
+      margin: 0;
     }
-
-    /* 헤더 스타일 */
-    .header {
+    
+    /* 상단 헤더 영역 */
+    .header-container {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
+      border-bottom: 2px solid #e2e8f0;
       padding-bottom: 10px;
-      border-bottom: 2px solid #e9ecef;
     }
-    .header-title {
-      font-weight: 900;
-      font-size: 14px;
-      color: #e91e63; /* 진한 분홍색 */
-      letter-spacing: -0.5px;
-    }
-    .header-actions {
+    .title-area {
       display: flex;
-      gap: 5px;
+      align-items: center;
+      gap: 8px;
     }
-    .icon-btn {
-      width: 28px;
-      height: 28px;
-      padding: 0;
+    .title-area img {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+    }
+    .title-area h2 {
+      font-size: 16px;
       margin: 0;
+      color: #d81b60; /* 진한 분홍색 적용 */
+      font-weight: 800;
+    }
+    .top-shortcuts {
       display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #fff;
-      border: 1px solid #ced4da;
-      border-radius: 6px;
-      color: #495057;
+      gap: 4px;
+    }
+    .top-shortcuts button {
+      background: none;
+      border: none;
       cursor: pointer;
-    }
-    .icon-btn:hover {
-      background: #e9ecef;
-    }
-
-    /* 업데이트 알림 메시지 스타일 */
-    .update-message {
-      background-color: #fff3cd;
-      color: #856404;
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      margin-bottom: 15px;
-      border: 1px solid #ffeeba;
-      line-height: 1.4;
-      word-break: keep-all;
-    }
-    .update-success {
-      background-color: #d4edda;
-      color: #155724;
-      border-color: #c3e6cb;
-    }
-
-    h4 { 
-      margin-top: 0; 
-      margin-bottom: 12px; 
-      color: #333; 
-      font-size: 14px;
+      padding: 4px;
+      border-radius: 4px;
+      transition: background 0.2s;
       display: flex;
       align-items: center;
-      gap: 6px; 
+      justify-content: center;
     }
-    .title-icon { width: 18px; height: 18px; }
-    .control-group { 
-      margin-bottom: 15px; 
+    .top-shortcuts button:hover {
+      background: #e2e8f0;
+    }
+    .top-shortcuts svg {
+      width: 20px;
+      height: 20px;
+      fill: #475569;
+    }
+
+    /* 업데이트 알림 메시지 영역 */
+    #updateMessage {
+      display: none;
+      background-color: #fce4ec;
+      border: 1px solid #f48fb1;
+      color: #c2185b;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      text-align: center;
+      line-height: 1.4;
+      margin-bottom: 15px;
+      font-weight: 500;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 설정 영역 */
+    .setting-group {
       background: white;
       padding: 12px;
       border-radius: 8px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 10px;
     }
-    
-    /* 주차 목표 2x2 배치를 위한 그리드 스타일 */
-    .goal-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr; /* 좌우 50%씩 2열 분할 */
-      row-gap: 8px; /* 위아래 간격 */
-    }
-    .goal-grid label {
-      margin-bottom: 0; /* 기존 margin 덮어쓰기 */
-    }
-
-    label { 
-      display: flex; 
+    .setting-item {
+      display: flex;
       align-items: center;
-      margin-bottom: 8px; 
-      font-size: 13px; 
-      color: #444;
+      margin-bottom: 4px;
+    }
+    .setting-item label {
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+    .setting-item input[type="checkbox"] {
+      margin-right: 8px;
+      width: 16px;
+      height: 16px;
       cursor: pointer;
     }
-    select, .main-btn { 
-      width: 100%; 
-      padding: 8px; 
-      box-sizing: border-box; 
-      border: 1px solid #ccc;
-      border-radius: 4px;
+    .desc {
+      font-size: 11px;
+      color: #64748b;
+      margin-left: 24px;
     }
-    select:focus { outline: none; border-color: #2196F3; }
-    input[type="checkbox"] { margin-right: 8px; cursor: pointer; }
-    
-    .main-btn { 
-      color: white; 
-      border: none; 
-      border-radius: 6px; 
-      cursor: pointer; 
-      font-weight: bold; 
+
+    /* 하단 버튼 영역 */
+    .bottom-shortcuts {
+      margin-top: 15px;
+    }
+    .btn-primary {
+      display: block;
+      width: 100%;
       padding: 10px;
-      transition: background-color 0.2s, transform 0.1s;
-      margin-bottom: 8px;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.2s;
     }
-    .main-btn:active { transform: scale(0.98); }
-    #saveBtn { background-color: #2196F3; }
-    #saveBtn:hover { background-color: #1976D2; }
-    #goSiteBtn { background-color: #FF9800; margin-bottom: 0; }
-    #goSiteBtn:hover { background-color: #F57C00; }
+    .btn-primary:hover {
+      background-color: #2563eb;
+    }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <div class="header-title">Let's Doro 알리미</div>
-    <div class="header-actions">
-      <button id="checkUpdateBtn" class="icon-btn" title="업데이트 확인">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+  <div class="header-container">
+    <div class="title-area">
+      <img src="icons/bell_icon.png" alt="Logo" onerror="this.style.display='none'"> 
+      <h2>Let's Doro 알리미</h2>
+    </div>
+    <div class="top-shortcuts">
+      <button id="btnUpdate" title="업데이트 확인">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
+        </svg>
       </button>
-      <button id="repoLinkBtn" class="icon-btn" title="배포 사이트로 이동">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+      <button id="btnDevSite" title="배포 사이트로 이동">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        </svg>
       </button>
     </div>
   </div>
 
-  <div id="updateMessage" class="update-message" style="display: none;"></div>
-  
-  <div class="control-group">
-    <h4><img src="icons/server_icon.png" class="title-icon" alt="서버"> 알림 받을 서버</h4>
-    <select id="serverSelect">
-      <option value="전체">전체 서버</option>
-      <option value="한섭">한섭</option>
-      <option value="일섭">일섭</option>
-      <option value="글로벌">글로벌</option>
-      <option value="북미">북미</option>
-    </select>
-  </div>
+  <div id="updateMessage"></div>
 
-  <div class="control-group">
-    <h4><img src="icons/target_icon.png" class="title-icon" alt="목표"> 주차 목표</h4>
-    <div class="goal-grid">
-      <label><input type="checkbox" id="goal10" checked> in 10%</label>
-      <label><input type="checkbox" id="goalNumber" checked> 숫자단</label>
-      <label><input type="checkbox" id="goal30" checked> in 30%</label>
-      <label><input type="checkbox" id="goalLove" checked> 애정망호</label>
+  <div class="setting-group">
+    <div class="setting-item">
+      <label>
+        <input type="checkbox" id="enableAutoCopy"> 
+        <strong>입장 코드 자동 복사</strong>
+      </label>
     </div>
+    <div class="desc">방 입장 시 코드를 즉시 복사합니다.</div>
   </div>
 
-  <div class="control-group">
-    <h4><img src="icons/bell_icon.png" class="title-icon" alt="알림"> 기타 설정(On/Off)</h4>
-    <label><input type="checkbox" id="newTicketAlert" checked> 새 티켓 알림</label>
-    <label><input type="checkbox" id="fullBangAlert" checked> 풀방(5/5) 알림</label>
-    <label><input type="checkbox" id="autoCopyEnabled" checked> 입장 시 코드 복사</label>
+  <div class="setting-group">
+    <div class="setting-item">
+      <label>
+        <input type="checkbox" id="enableFullBang"> 
+        <strong>풀방 (5/5) 알림</strong>
+      </label>
+    </div>
+    <div class="desc">파티원이 모두 차면 알려줍니다.</div>
   </div>
 
-  <button id="saveBtn" class="main-btn">설정 저장</button>
-  <button id="goSiteBtn" class="main-btn">레츠도로 바로가기</button>
-  
+  <div class="bottom-shortcuts">
+    <button id="btnLetsdoro" class="btn-primary">레츠도로 바로가기</button>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 </html>
